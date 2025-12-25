@@ -148,6 +148,16 @@
     justify-content: space-between;
     padding: 3px 0;
     font-size: 13px;
+    align-items: center;
+  }
+
+  .calc-item .label {
+    flex: 0 0 auto;
+  }
+
+  .calc-item .value {
+    text-align: right;
+    min-width: 100px;
   }
 
   .balance-row {
@@ -156,6 +166,10 @@
     padding-top: 5px;
     font-weight: bold;
     font-size: 15px;
+  }
+
+  .balance-row .value {
+    font-weight: bold;
   }
 
   /* SIGNATURES */
@@ -270,16 +284,16 @@
       
       <div class="total-calc">
         <div class="calc-item">
-          <span>សរុប / Sub Total:</span>
-          <strong id="subtotal"></strong>
+          <span class="label">សរុប / Sub Total:</span>
+          <strong class="value" id="subtotal"></strong>
         </div>
         <div class="calc-item">
-          <span>ប្រាក់កក់ / Deposit:</span>
-          <strong id="deposit"></strong>
+          <span class="label">ប្រាក់កក់ / Deposit:</span>
+          <strong class="value" id="deposit"></strong>
         </div>
         <div class="calc-item balance-row">
-          <span>នៅសល់ / Balance:</span>
-          <span id="balance"></span>
+          <span class="label">នៅសល់ / Balance:</span>
+          <span class="value" id="balance"></span>
         </div>
       </div>
     </div>
