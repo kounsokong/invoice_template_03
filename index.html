@@ -320,13 +320,14 @@
 function getUrlParams() {
   const params = new URLSearchParams(window.location.search);
   return {
+    header_image: params.get('header_image') || '',
     invoice_no: params.get('invoice_no') || '',
     invoice_date: params.get('invoice_date') || '',
     line_items: params.get('line_items') || '[]',
     remarks: params.get('remarks') || '',
-    subtotal: params.get('subtotal') || '0',
-    deposit: params.get('deposit') || '0',
-    balance: params.get('balance') || '0'
+    subtotal: params.get('subtotal') || '',
+    deposit: params.get('deposit') || '',
+    balance: params.get('balance') || ''
   };
 }
 
@@ -334,6 +335,21 @@ function getUrlParams() {
 function populateInvoice() {
   try {
     const data = getUrlParams();
+    
+    // Set header image if provided
+    const headerImageContainer = document.getElementById('header-image-container');
+    if (data.header_image) {
+      const img = document.createElement('img');
+      img.src = decodeURIComponent(data.header_image);
+      img.alt = 'Company Logo';
+      img.onerror = function() {
+        console.error('Failed to load header image');
+        headerImageContainer.style.display = 'none';
+      };
+      headerImageContainer.appendChild(img);
+    } else {
+      headerImageContainer.style.display = 'none';
+    }
     
     // Format date as DD/MM/YYYY
     let formattedDate = data.invoice_date;
@@ -351,80 +367,44 @@ function populateInvoice() {
       }
     }
     
-    // Remove duplicate $ signs from currency values
-    const cleanCurrency = (value) => {
-      if (!value) return '';
-      // Remove any $ signs and clean up
-      return value.toString().replace(/\$+/g, '
-    
-    // Parse and populate line items
-    let lineItems = [];
-    try {
-      lineItems = JSON.parse(decodeURIComponent(data.line_items));
-    } catch (e) {
-      console.error('Error parsing line items:', e);
-      lineItems = [];
-    }
-    
-    const tbody = document.getElementById('line-items');
-    tbody.innerHTML = '';
-    
-    lineItems.forEach((item, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="text-center">${item.no || (index + 1)}</td>
-        <td>${item.item_name || item.description || ''}</td>
-        <td class="text-center">${item.qty || item.quantity || ''}</td>
-        <td class="text-right">${item.rate || item.price || ''}</td>
-        <td class="text-right">${item.amount || item.total || ''}</td>
-      `;
-      tbody.appendChild(row);
-    });
-    
-  } catch (error) {
-    console.error('Error populating invoice:', error);
-  }
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', populateInvoice);
-</script>
-
-</body>
-</html>).trim();
-    };
-    
     // Set basic fields
     document.getElementById('invoice_no').textContent = data.invoice_no;
     document.getElementById('invoice_date').textContent = formattedDate;
     document.getElementById('remarks').textContent = data.remarks;
-    document.getElementById('subtotal').textContent = cleanCurrency(data.subtotal);
-    document.getElementById('deposit').textContent = cleanCurrency(data.deposit);
-    document.getElementById('balance').textContent = cleanCurrency(data.balance);
+    document.getElementById('subtotal').textContent = data.subtotal;
+    document.getElementById('deposit').textContent = data.deposit;
+    document.getElementById('balance').textContent = data.balance;
     
     // Parse and populate line items
     let lineItems = [];
     try {
-      lineItems = JSON.parse(decodeURIComponent(data.line_items));
+      const decodedItems = decodeURIComponent(data.line_items);
+      lineItems = JSON.parse(decodedItems);
+      console.log('Parsed line items:', lineItems);
     } catch (e) {
       console.error('Error parsing line items:', e);
+      console.error('Raw line_items param:', data.line_items);
       lineItems = [];
     }
     
     const tbody = document.getElementById('line-items');
     tbody.innerHTML = '';
     
-    lineItems.forEach((item, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="text-center">${item.no || (index + 1)}</td>
-        <td>${item.item_name || item.description || ''}</td>
-        <td class="text-center">${item.qty || item.quantity || ''}</td>
-        <td class="text-right">${item.rate || item.price || ''}</td>
-        <td class="text-right">${item.amount || item.total || ''}</td>
-      `;
-      tbody.appendChild(row);
-    });
+    if (Array.isArray(lineItems) && lineItems.length > 0) {
+      lineItems.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="text-center">${item.no || (index + 1)}</td>
+          <td>${item.item_name || item.description || item.name || ''}</td>
+          <td class="text-center">${item.qty || item.quantity || ''}</td>
+          <td class="text-right">${item.rate || item.price || item.unit_price || ''}</td>
+          <td class="text-right">${item.amount || item.total || ''}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    } else {
+      console.warn('No line items found or invalid format');
+    }
     
   } catch (error) {
     console.error('Error populating invoice:', error);
