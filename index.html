@@ -17,7 +17,7 @@
     margin: 0;
     padding: 5mm;
     font-family: "Khmer OS Battambang", "Noto Sans Khmer", Arial, sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     color: #c0392b;
     line-height: 1.5;
     background-color: #fff;
@@ -29,7 +29,7 @@
   }
 
   .invoice-container {
-    padding: 3mm;
+    padding: 8mm;
     min-height: 195mm;
     display: flex;
     flex-direction: column;
@@ -42,7 +42,7 @@
   /* HEADER SECTION */
   .header {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
   }
 
   .header-image {
@@ -52,7 +52,7 @@
 
   .header-image img {
     max-width: 100%;
-    max-height: 120px;
+    max-height: 80px;
     object-fit: contain;
   }
 
@@ -76,10 +76,44 @@
     letter-spacing: 2px;
   }
 
+  .invoice-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    gap: 15px;
+  }
+
+  .bill-to {
+    flex: 0 0 55%;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .bill-to-title {
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 5px;
+    text-decoration: underline;
+  }
+
+  .bill-to-content {
+    padding-left: 5px;
+  }
+
+  .bill-to-item {
+    margin-bottom: 2px;
+  }
+
+  .bill-to-label {
+    display: inline-block;
+    min-width: 60px;
+    font-weight: 600;
+  }
+
   .meta-right {
     text-align: right;
     font-size: 12px;
-    margin-top: -10px;
+    flex: 0 0 auto;
   }
 
   .meta-right strong {
@@ -98,14 +132,14 @@
     border: 1.5px solid #c0392b;
     background-color: rgba(192, 57, 43, 0.08);
     padding: 5px 3px;
-    font-size: 14px;
+    font-size: 11px;
     line-height: 1.3;
   }
 
   td {
     border: 1px solid #c0392b;
     padding: 4px 5px;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 1.2;
   }
 
@@ -139,7 +173,7 @@
     border: 1px dashed #c0392b;
     padding: 6px 8px;
     min-height: 60px;
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .remarks-title {
@@ -303,9 +337,33 @@
       <span>INVOICE</span>
     </div>
 
-    <div class="meta-right">
-      <div>លេខវិក្កយបត្រ / No: <strong id="invoice_no" class="english-font"></strong></div>
-      <div>កាលបរិច្ឆេទ / Date: <strong id="invoice_date" class="english-font"></strong></div>
+    <div class="invoice-info">
+      <div class="bill-to">
+        <div class="bill-to-title">ព័ត៌មានអតិថិជន / Bill To:</div>
+        <div class="bill-to-content">
+          <div class="bill-to-item">
+            <span class="bill-to-label">ក្រុមហ៊ុន / Company:</span>
+            <span id="company_name"></span>
+          </div>
+          <div class="bill-to-item">
+            <span class="bill-to-label">អ្នកទំនាក់ទំនង / Att:</span>
+            <span id="contact_name"></span>
+          </div>
+          <div class="bill-to-item">
+            <span class="bill-to-label">អាសយដ្ឋាន / Address:</span>
+            <span id="address"></span>
+          </div>
+          <div class="bill-to-item">
+            <span class="bill-to-label">ទូរស័ព្ទ / Tel:</span>
+            <span id="phone_number" class="english-font"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-right">
+        <div>លេខវិក្កយបត្រ / No: <strong id="invoice_no" class="english-font"></strong></div>
+        <div>កាលបរិច្ឆេទ / Date: <strong id="invoice_date" class="english-font"></strong></div>
+      </div>
     </div>
   </div>
 
@@ -333,7 +391,7 @@
       
       <div class="total-calc">
         <div class="calc-item">
-          <span class="label">សរុប / Subtotal:</span>
+          <span class="label">សរុប / Sub Total:</span>
           <span style="flex-grow: 1;"></span>
           <strong class="value subtotal-value" id="subtotal"></strong>
         </div>
@@ -375,6 +433,10 @@ function getUrlParams() {
     header_image: params.get('header_image') || '',
     invoice_no: params.get('invoice_no') || '',
     invoice_date: params.get('invoice_date') || '',
+    company_name: params.get('company_name') || '',
+    contact_name: params.get('contact_name') || '',
+    address: params.get('address') || '',
+    phone_number: params.get('phone_number') || '',
     line_items: params.get('line_items') || '[]',
     remarks: params.get('remarks') || '',
     subtotal: params.get('subtotal') || '',
@@ -431,6 +493,10 @@ function populateInvoice() {
     // Set basic fields
     document.getElementById('invoice_no').textContent = data.invoice_no;
     document.getElementById('invoice_date').textContent = formatDate(data.invoice_date);
+    document.getElementById('company_name').textContent = data.company_name;
+    document.getElementById('contact_name').textContent = data.contact_name;
+    document.getElementById('address').textContent = data.address;
+    document.getElementById('phone_number').textContent = data.phone_number;
     document.getElementById('remarks').textContent = data.remarks;
     document.getElementById('subtotal').textContent = data.subtotal;
     document.getElementById('deposit').textContent = data.deposit;
