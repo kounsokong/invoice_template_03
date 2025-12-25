@@ -6,7 +6,7 @@
 <title>Professional A5 Invoice</title>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;700&family=Freehand&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;700&display=swap');
 
   @page {
     size: A5 portrait;
@@ -331,10 +331,35 @@ function getUrlParams() {
   };
 }
 
+// Function to format date as DD/MM/YYYY
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  
+  try {
+    // Try parsing the date
+    const date = new Date(dateStr);
+    
+    // Check if date is valid
+    if (!isNaN(date.getTime())) {
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+  } catch (e) {
+    console.error('Error formatting date:', e);
+  }
+  
+  // Return original if can't format
+  return dateStr;
+}
+
 // Function to populate invoice data
 function populateInvoice() {
   try {
     const data = getUrlParams();
+    
+    console.log('URL Parameters:', data);
     
     // Set header image if provided
     const headerImageContainer = document.getElementById('header-image-container');
@@ -351,25 +376,9 @@ function populateInvoice() {
       headerImageContainer.style.display = 'none';
     }
     
-    // Format date as DD/MM/YYYY
-    let formattedDate = data.invoice_date;
-    if (data.invoice_date) {
-      try {
-        const date = new Date(data.invoice_date);
-        if (!isNaN(date.getTime())) {
-          const day = String(date.getDate()).padStart(2, '0');
-          const month = String(date.getMonth() + 1).padStart(2, '0');
-          const year = date.getFullYear();
-          formattedDate = `${day}/${month}/${year}`;
-        }
-      } catch (e) {
-        console.error('Error formatting date:', e);
-      }
-    }
-    
     // Set basic fields
     document.getElementById('invoice_no').textContent = data.invoice_no;
-    document.getElementById('invoice_date').textContent = formattedDate;
+    document.getElementById('invoice_date').textContent = formatDate(data.invoice_date);
     document.getElementById('remarks').textContent = data.remarks;
     document.getElementById('subtotal').textContent = data.subtotal;
     document.getElementById('deposit').textContent = data.deposit;
@@ -377,16 +386,28 @@ function populateInvoice() {
     
     // Parse and populate line items
     let lineItems = [];
+    
     try {
-      const decodedItems = decodeURIComponent(data.line_items);
-      lineItems = JSON.parse(decodedItems);
+      // First try to decode if it's URL encoded
+      let itemsStr = data.line_items;
+      
+      // Check if it needs decoding
+      if (itemsStr.includes('%')) {
+        itemsStr = decodeURIComponent(itemsStr);
+      }
+      
+      console.log('Line items string:', itemsStr);
+      
+      // Parse JSON
+      lineItems = JSON.parse(itemsStr);
       console.log('Parsed line items:', lineItems);
+      
     } catch (e) {
       console.error('Error parsing line items:', e);
-      console.error('Raw line_items param:', data.line_items);
-      lineItems = [];
+      console.error('Raw line_items:', data.line_items);
     }
     
+    // Populate table
     const tbody = document.getElementById('line-items');
     tbody.innerHTML = '';
     
@@ -403,16 +424,20 @@ function populateInvoice() {
         tbody.appendChild(row);
       });
     } else {
-      console.warn('No line items found or invalid format');
+      console.warn('No line items to display');
     }
     
   } catch (error) {
     console.error('Error populating invoice:', error);
+    console.error('Error stack:', error.stack);
   }
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', populateInvoice);
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Page loaded, initializing invoice...');
+  populateInvoice();
+});
 </script>
 
 </body>
