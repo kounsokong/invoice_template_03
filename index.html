@@ -166,7 +166,7 @@
   }
 
   .calc-item .value {
-    text-align: right;
+    text-align: right !important;
     min-width: 100px;
     font-family: Arial, sans-serif;
   }
@@ -180,8 +180,8 @@
   }
 
   .balance-row .value {
-    font-weight: bold;
-    text-align: right; 
+    font-weight: bold !important;
+    text-align: right !important; 
   }
 
   .subtotal-value {
@@ -250,6 +250,12 @@
     .print-button {
       display: none;
     }
+
+      /* Force right alignment in print */
+  .calc-item .value,
+  .balance-row .value {
+    text-align: right !important;
+  }
   }
 </style>
 </head>
