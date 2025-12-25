@@ -166,22 +166,27 @@
   }
 
   .calc-item .value {
-    text-align: right !important;
-    min-width: 100px;
-    font-family: Arial, sans-serif;
+  flex: 0 0 auto;                    /* ← New: Don't grow/shrink */
+  text-align: right !important;
+  min-width: 100px;
+  margin-left: auto;                 /* ← New: Force to right side */
+  font-family: Arial, sans-serif;
   }
 
   .balance-row {
     border-top: 2px solid #c0392b;
-    margin-top: 4px;
-    padding-top: 4px;
     font-weight: bold;
-    font-size: 15px;
+    display: flex !important;          /* ← New: Force flexbox */
+    justify-content: space-between !important;  /* ← New */
+    align-items: center !important;    /* ← New */
   }
-
+  
   .balance-row .value {
     font-weight: bold !important;
-    text-align: right !important; 
+    text-align: right !important;
+    flex: 0 0 auto;                    /* ← New: Don't grow/shrink */
+    margin-left: auto !important;      /* ← New: Force to right */
+    min-width: 100px;                  /* ← New: Minimum width */
   }
 
   .subtotal-value {
@@ -253,9 +258,21 @@
 
       /* Force right alignment in print */
   .calc-item .value,
+
+      /* Force flexbox layout */
+  .balance-row {
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+  
+  /* Force right alignment */
   .balance-row .value {
     text-align: right !important;
+    margin-left: auto !important;     /* ← Key fix for print */
+    flex: 0 0 auto !important;
+    font-weight: bold !important;
   }
+}
   }
 </style>
 </head>
